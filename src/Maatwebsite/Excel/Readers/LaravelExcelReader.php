@@ -214,10 +214,14 @@ class LaravelExcelReader {
      * @param bool           $noBasePath
      * @return LaravelExcelReader
      */
-    public function load($file, $encoding = false, $noBasePath = false)
+    public function load($file, $encoding = false, $noBasePath = false, $readDataOnly = false)
     {
         // init the loading
         $this->_init($file, $encoding, $noBasePath);
+
+        // set readOnlyData
+        if ($readDataOnly)
+            $this->_setReadDataOnly(true);
 
         // Only fetch selected sheets if necessary
         if ($this->sheetsSelected())
@@ -1057,6 +1061,18 @@ class LaravelExcelReader {
     }
 
     /**
+     * Read data only, ignoring metadata
+     * @param boolean $boolean
+     * @return LaravelExcelReader
+     */
+    protected function _setReadDataOnly($boolean = false)
+    {
+        $this->reader->setReadDataOnly($boolean);
+
+        return $this;
+    }
+
+    /**
      * Set reader defaults
      * @return void
      */
@@ -1095,6 +1111,9 @@ class LaravelExcelReader {
 
         // Set default include charts
         $this->reader->setIncludeCharts(Config::get('excel.import.includeCharts', false));
+
+        // Set default read data only
+        $this->reader->setReadDataOnly(Config::get('excel.import.readDataOnly', false));
     }
 
     /**
